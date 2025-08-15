@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Analyzing Adversarial Losses</title>
+    <meta property="og:title" content="nlos" />
+    <style>
+      body {
+        font-family:
+          "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
+          Helvetica, Arial, "Lucida Grande", sans-serif;
+        font-weight: 300;
+        font-size: 18px;
+        margin: 0 auto;
+        max-width: 1500px;
+        padding-bottom: 100px;
+      }
+
+      h1 {
+        font-weight: 300;
+        text-align: center;
+        margin: 0.4em 0;
+      }
+
+      p {
+        margin: 0.2em 0;
+      }
+
+      a {
+        color: #1367a7;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #208799;
+      }
+
+      hr {
+        margin: 1em 0;
+        border: 0;
+        height: 1.5px;
+        background-image: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0),
+          rgba(0, 0, 0, 0.75),
+          rgba(0, 0, 0, 0)
+        );
+      }
+
+      ol {
+        padding-left: 20px;
+      }
+
+      .section-title {
+        font-size: 35px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 2em;
+      }
+
+      .subsection-title {
+        font-size: 25px;
+        text-align: center;
+        margin-top: 1em;
+      }
+
+      table.video-table {
+        width: 100%;
+        table-layout: fixed;
+        border-spacing: 5px;
+      }
+
+      table.video-table td {
+        vertical-align: bottom;
+        text-align: center;
+      }
+
+      video {
+        width: 100%;
+        height: auto;
+      }
+      img {
+        width: 50%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <p style="text-align: center; font-size: 42px">
+      Analyzing Adversarial Losses for Out-of-Domain Generalization in
+      Feed-Forward 3D Reconstruction
+    </p>
+
+    <p style="text-align: center; font-size: 25px">Supplementary Material</p>
+
+    <div id="sr_samples">
+      <p class="subsection-title">
+        Reconstruction of Stable Virtual Camera scenes generated from a single
+        SWORD image
+      </p>
+      <p style="text-align: center">
+        Compared to existing methods, our LPIPS+GAN training scheme produces
+        reconstructions with improved perceptual quality from 3D-inconsistent
+        diffusion-generated inputs.
+      </p>
+    </div>
+
+    <table class="video-table">
+      <tr>
+        <td><strong>Input</strong></td>
+
+        <td><strong>latentSplat</strong></td>
+        <td><strong>MVSplat</strong></td>
+        <td><strong>NoPoSplat</strong></td>
+        <td><strong>Our NoPoSplat</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <img src="resources/samp11/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp11/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp11/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp11/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp11/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp3/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp3/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp3/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp3/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp3/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp1/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp1/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp1/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp1/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp1/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+    </table>
+
+    <div id="sr_samples">
+      <p class="subsection-title">
+        Reconstruction of Stable Virtual Camera scenes generated from a single
+        LAION-Aesthetics image
+      </p>
+    </div>
+
+    <table class="video-table">
+      <tr>
+        <td><strong>Input</strong></td>
+
+        <td><strong>latentSplat</strong></td>
+        <td><strong>MVSplat</strong></td>
+        <td><strong>NoPoSplat</strong></td>
+        <td><strong>Our NoPoSplat</strong></td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp9/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp9/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp9/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp9/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp9/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp8/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp8/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp8/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp8/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp8/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp10/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp10/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp10/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp10/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp10/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+    </table>
+
+    <div id="sr_samples">
+      <p class="subsection-title">
+        Reconstruction of Stable Virtual Camera scenes generated from a single
+        uCO3D image
+      </p>
+    </div>
+
+    <table class="video-table">
+      <tr>
+        <td><strong>Input</strong></td>
+
+        <td><strong>latentSplat</strong></td>
+        <td><strong>MVSplat</strong></td>
+        <td><strong>NoPoSplat</strong></td>
+        <td><strong>Our NoPoSplat</strong></td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp16/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp16/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp16/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp16/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp16/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp15/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp15/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp15/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp15/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp15/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <img src="resources/samp17/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp17/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp17/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp17/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp17/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+    </table>
+
+    <div id="sr_samples">
+      <p class="subsection-title">
+        Reconstruction of DimensionX scenes generated from a single uCO3D image
+      </p>
+    </div>
+
+    <table class="video-table">
+      <tr>
+        <td><strong>Input</strong></td>
+
+        <td><strong>latentSplat</strong></td>
+        <td><strong>MVSplat</strong></td>
+        <td><strong>NoPoSplat</strong></td>
+        <td><strong>Our NoPoSplat</strong></td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp14/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp14/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp14/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp14/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp14/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp12/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp12/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp12/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp12/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp12/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp13/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp13/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp13/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp13/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp13/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+    </table>
+
+    <div id="sr_samples">
+      <p class="subsection-title">Reconstruction of uCO3D Dynamic Scenes</p>
+      <p style="text-align: center">
+        Compared to existing methods, our LPIPS+GAN training scheme produces
+        reconstructions with improved perceptual quality in the presence of
+        slight 3D inconsistencies due to motion.
+      </p>
+    </div>
+
+    <table class="video-table">
+      <tr>
+        <td><strong>Input</strong></td>
+        <td><strong>latentSplat</strong></td>
+        <td><strong>MVSplat</strong></td>
+        <td><strong>NoPoSplat</strong></td>
+        <td><strong>Our NoPoSplat</strong></td>
+      </tr>
+      <tr>
+        <td>
+          <img src="resources/samp4/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp4/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp4/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp4/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp4/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <img src="resources/samp6/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp6/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp6/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp6/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp6/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <img src="resources/samp5/ctx.png" alt="Input Image" />
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp5/3.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp5/4.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp5/1.mp4" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <video controls muted autoplay loop>
+            <source src="resources/samp5/2.mp4" type="video/mp4" />
+          </video>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
